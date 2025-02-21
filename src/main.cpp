@@ -51,3 +51,23 @@ float getDistance() {
   float distance = duration * 0.034 / 2; // Convert to cm
   return distance;
 }
+
+void loop() {
+  float distance = getDistance();
+  Serial.print("Trash Level: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  // Send data to Firebase
+  Firebase.setFloat(firebaseData, "/smart_bin/trash_level", distance);
+
+  // If bin is full, send an alert
+  if (distance <= binFullDistance) {
+      Serial.println("🚨 Bin is FULL! Sending alert to Firebase...");
+      Firebase.setString(firebaseData, "/smart_bin/status", "FULL");
+  } else {
+      Firebase.setString(firebaseData, "/smart_bin/status", "OK");
+  }
+
+  delay(5000);  // Check every 5 seconds
+}
