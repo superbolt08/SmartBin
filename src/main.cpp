@@ -1,10 +1,12 @@
 #include <WiFi.h>
 #include <FirebaseESP32.h>
 #include "secrets.h" // Firebase credentials
-#include "config.h" // Wifi credentials
+#include "config.h" // WiFi credentials
 
 // Firebase instance
 FirebaseData firebaseData;
+FirebaseAuth auth;
+FirebaseConfig config;
 
 // Ultrasonic sensor pins
 const int trigPin = 5;
@@ -24,8 +26,13 @@ void setup() {
   }
   Serial.println("Connected to WiFi!");
 
+  // Firebase Configuration
+  config.host = FIREBASE_HOST;
+  config.api_key = FIREBASE_AUTH;
+
   // Initialize Firebase
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
 
   // Ultrasonic sensor setup
   pinMode(trigPin, OUTPUT);
